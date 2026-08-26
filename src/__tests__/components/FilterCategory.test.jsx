@@ -1,26 +1,29 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { describe, beforeEach, it, expect } from 'vitest';
+import { configureStore } from '@reduxjs/toolkit';
+import filterReducer from '../../store/slices/filterSlice';
+import threadsReducer from '../../store/slices/threadsSlice';
 import FilterCategory from '../../components/common/FilterCategory';
-
-const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
 
 describe('FilterCategory Component', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({
-      filter: { category: 'all' },
-      threads: {
-        threads: [
-          { id: '1', category: 'redux' },
-          { id: '2', category: 'perkenalan' },
-          { id: '3', category: 'General' },
-          { id: '4', category: 'redux' },
-        ],
+    store = configureStore({
+      reducer: {
+        filter: filterReducer,
+        threads: threadsReducer,
+      },
+      preloadedState: {
+        filter: { category: 'all' },
+        threads: {
+          threads: [
+            { id: '1', category: 'redux' },
+            { id: '2', category: 'perkenalan' },
+            { id: '3', category: 'General' },
+            { id: '4', category: 'redux' },
+          ],
+        },
       },
     });
   });
@@ -48,24 +51,30 @@ describe('FilterCategory Component', () => {
     const reduxButton = screen.getByText('redux');
     fireEvent.click(reduxButton);
 
-    const actions = store.getActions();
-    expect(actions[0].type).toBe('filter/setCategory');
-    expect(actions[0].payload).toBe('redux');
+    const state = store.getState();
+    expect(state.filter.category).toBe('redux');
   });
 
   it('should highlight active category', () => {
-    store = mockStore({
-      filter: { category: 'redux' },
-      threads: {
-        threads: [
-          { id: '1', category: 'redux' },
-          { id: '2', category: 'perkenalan' },
-        ],
+    // Buat store dengan active category 'redux'
+    const storeWithActive = configureStore({
+      reducer: {
+        filter: filterReducer,
+        threads: threadsReducer,
+      },
+      preloadedState: {
+        filter: { category: 'redux' },
+        threads: {
+          threads: [
+            { id: '1', category: 'redux' },
+            { id: '2', category: 'perkenalan' },
+          ],
+        },
       },
     });
 
     render(
-      <Provider store={store}>
+      <Provider store={storeWithActive}>
         <FilterCategory />
       </Provider>,
     );

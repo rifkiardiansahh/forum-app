@@ -1,27 +1,36 @@
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
+// import thunk from 'redux-thunk';
 import { login, logout } from '../../store/thunks/authThunks';
 import * as api from '../../api';
+import authReducer from '../../store/slices/authSlice';
 
-const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
-
+// Mock API
 jest.mock('../../api');
 
 describe('authThunks', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({
-      auth: {
-        user: null,
-        token: null,
-        loading: false,
-        error: null,
-        isAuthenticated: false,
+    jest.spyOn(Storage.prototype, 'removeItem');
+    store = configureStore({
+      reducer: {
+        auth: authReducer,
+      },
+      preloadedState: {
+        auth: {
+          user: null,
+          token: null,
+          loading: false,
+          error: null,
+          isAuthenticated: false,
+        },
       },
     });
     jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('should dispatch pending and fulfilled on successful login', async() => {
@@ -29,23 +38,18 @@ describe('authThunks', () => {
     api.loginUser.mockResolvedValue({
       data: { data: { token: mockToken } },
     });
-
-    const expectedActions = [
-      { type: 'auth/login/pending' },
-      { type: 'auth/getProfile/pending' },
-      {
-        type: 'auth/getProfile/fulfilled',
-        payload: { user: { id: '1', name: 'Test' } },
-      },
-      { type: 'auth/login/fulfilled', payload: { token: mockToken } },
-    ];
+    api.getOwnProfile.mockResolvedValue({
+      data: { data: { user: { id: 'user-1', name: 'Test' } } },
+    });
 
     await store.dispatch(
       login({ email: 'test@test.com', password: 'password123' }),
     );
 
-    const actions = store.getActions();
-    expect(actions).toEqual(expectedActions);
+    const state = store.getState();
+    expect(state.auth.token).toBe(mockToken);
+    expect(state.auth.isAuthenticated).toBe(true);
+    expect(state.auth.loading).toBe(false);
   });
 
   it('should dispatch rejected on failed login', async() => {
@@ -55,22 +59,35 @@ describe('authThunks', () => {
 
     await store.dispatch(login({ email: 'wrong@test.com', password: 'wrong' }));
 
-    const actions = store.getActions();
-    expect(actions[0].type).toBe('auth/login/pending');
-    expect(actions[actions.length - 1].type).toBe('auth/login/rejected');
-    expect(actions[actions.length - 1].payload).toBe('Invalid credentials');
+    const state = store.getState();
+    expect(state.auth.error).toBe('Invalid credentials');
+    expect(state.auth.isAuthenticated).toBe(false);
+    expect(state.auth.loading).toBe(false);
   });
 
   it('should handle logout', async() => {
-    const mockStoreWithAuth = mockStore({
-      auth: { user: { id: '1' }, token: 'token', isAuthenticated: true },
+    // Buat store dengan state sudah login
+    const authStore = configureStore({
+      reducer: { auth: authReducer },
+      preloadedState: {
+        auth: {
+          user: { id: '1', name: 'User' },
+          token: 'token',
+          loading: false,
+          error: null,
+          isAuthenticated: true,
+        },
+      },
     });
 
-    await mockStoreWithAuth.dispatch(logout());
+    await authStore.dispatch(logout());
 
-    const actions = mockStoreWithAuth.getActions();
-    expect(actions[0].type).toBe('auth/logout/fulfilled');
-    // localStorage.removeItem should have been called
-    expect(localStorage.getItem('token')).toBeNull();
+    // Verifikasi state berubah
+    const state = authStore.getState();
+    expect(state.auth.isAuthenticated).toBe(false);
+    expect(state.auth.token).toBe(null);
+    expect(state.auth.user).toBe(null);
+    // Verifikasi localStorage.removeItem dipanggil
+    expect(localStorage.removeItem).toHaveBeenCalledWith('token');
   });
 });

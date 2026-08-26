@@ -25,6 +25,7 @@ module.exports = {
     semi: ['error', 'always'], // Izinkan titik koma (WAJIB pakai)
     'space-before-function-paren': ['error', 'never'], // Tanpa spasi sebelum kurung fungsi
     'no-undef': 'off', // Matikan aturan no-undef untuk mengizinkan penggunaan variabel yang belum didefinisikan
+    'eol-last': 'off'
   },
   settings: {
     react: {

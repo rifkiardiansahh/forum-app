@@ -1,10 +1,8 @@
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
 import { fetchThreads, createNewThread } from '../../store/thunks/threadThunks';
 import * as api from '../../api';
-
-const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
+import threadsReducer from '../../store/slices/threadsSlice';
+import authReducer from '../../store/slices/authSlice';
 
 jest.mock('../../api');
 
@@ -12,9 +10,14 @@ describe('threadThunks', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({
-      threads: { threads: [], loading: false, error: null },
-      auth: { user: { id: 'user-1' } },
+    store = configureStore({
+      reducer: {
+        threads: threadsReducer,
+        auth: authReducer,
+      },
+      preloadedState: {
+        auth: { user: { id: 'user-1' } },
+      },
     });
     jest.clearAllMocks();
   });
@@ -30,10 +33,10 @@ describe('threadThunks', () => {
 
     await store.dispatch(fetchThreads());
 
-    const actions = store.getActions();
-    expect(actions[0].type).toBe('threads/fetchThreads/pending');
-    expect(actions[1].type).toBe('threads/fetchThreads/fulfilled');
-    expect(actions[1].payload).toEqual(mockThreads);
+    const state = store.getState();
+    expect(state.threads.loading).toBe(false);
+    expect(state.threads.threads).toEqual(mockThreads);
+    expect(state.threads.error).toBeNull();
   });
 
   it('should handle fetch threads error', async() => {
@@ -43,10 +46,10 @@ describe('threadThunks', () => {
 
     await store.dispatch(fetchThreads());
 
-    const actions = store.getActions();
-    expect(actions[0].type).toBe('threads/fetchThreads/pending');
-    expect(actions[1].type).toBe('threads/fetchThreads/rejected');
-    expect(actions[1].payload).toBe('Network error');
+    const state = store.getState();
+    expect(state.threads.loading).toBe(false);
+    expect(state.threads.error).toBe('Network error');
+    expect(state.threads.threads).toEqual([]);
   });
 
   it('should create a new thread', async() => {
@@ -69,9 +72,8 @@ describe('threadThunks', () => {
       }),
     );
 
-    const actions = store.getActions();
-    expect(actions[0].type).toBe('threads/createNewThread/pending');
-    expect(actions[1].type).toBe('threads/createNewThread/fulfilled');
-    expect(actions[1].payload).toEqual(newThread);
+    const state = store.getState();
+    expect(state.threads.threads[0]).toEqual(newThread);
+    expect(state.threads.loading).toBe(false);
   });
 });

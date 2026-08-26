@@ -1,15 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
 import ThreadItem from '../../components/threads/ThreadItem';
+import authReducer from '../../store/slices/authSlice';
+import usersReducer from '../../store/slices/usersSlice';
 
-const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
-
-jest.mock('../../store/thunks/threadThunks', () => ({
-  voteThread: jest.fn(() => ({ type: 'threads/voteThread' })),
+// Mock react-router-dom sepenuhnya untuk menghindari error resolusi
+jest.mock('react-router-dom', () => ({
+  Link: ({ to, children }) => <a href={to}>{children}</a>,
+  BrowserRouter: ({ children }) => <div>{children}</div>,
+  MemoryRouter: ({ children }) => <div>{children}</div>,
+  useNavigate: () => jest.fn(),
+  useParams: () => ({}),
 }));
 
 describe('ThreadItem Component', () => {
@@ -36,18 +38,22 @@ describe('ThreadItem Component', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({
-      auth: { user: { id: 'user-1' } },
-      users: { users: mockUsers },
+    store = configureStore({
+      reducer: {
+        auth: authReducer,
+        users: usersReducer,
+      },
+      preloadedState: {
+        auth: { user: { id: 'user-1' }, isAuthenticated: true },
+        users: { users: mockUsers },
+      },
     });
   });
 
   it('should render thread title correctly', () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <ThreadItem thread={mockThread} />
-        </BrowserRouter>
+        <ThreadItem thread={mockThread} />
       </Provider>,
     );
 
@@ -57,9 +63,7 @@ describe('ThreadItem Component', () => {
   it('should render owner name correctly', () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <ThreadItem thread={mockThread} />
-        </BrowserRouter>
+        <ThreadItem thread={mockThread} />
       </Provider>,
     );
 
@@ -69,9 +73,7 @@ describe('ThreadItem Component', () => {
   it('should display vote counts correctly', () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <ThreadItem thread={mockThread} />
-        </BrowserRouter>
+        <ThreadItem thread={mockThread} />
       </Provider>,
     );
 
@@ -82,9 +84,7 @@ describe('ThreadItem Component', () => {
   it('should show upvoted state when user has upvoted', () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <ThreadItem thread={mockThread} />
-        </BrowserRouter>
+        <ThreadItem thread={mockThread} />
       </Provider>,
     );
 
@@ -95,9 +95,7 @@ describe('ThreadItem Component', () => {
   it('should show category badge when category exists', () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <ThreadItem thread={mockThread} />
-        </BrowserRouter>
+        <ThreadItem thread={mockThread} />
       </Provider>,
     );
 

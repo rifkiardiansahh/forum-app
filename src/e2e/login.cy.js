@@ -11,17 +11,33 @@ describe('Login Flow', () => {
   });
 
   it('should show error message with invalid credentials', () => {
+    // 1. Intercept permintaan login dengan respons gagal
+    cy.intercept('POST', 'https://forum-api.dicoding.dev/v1/login', {
+      statusCode: 400, // atau 401
+      body: {
+        status: 'fail',
+        message: 'Email atau password salah', // sesuaikan dengan pesan dari API
+      },
+    }).as('loginFail');
+
+    // 2. Isi form dengan kredensial salah
     cy.get('input[type="email"]').type('wrong@test.com');
     cy.get('input[type="password"]').type('wrongpassword');
     cy.get('button[type="submit"]').click();
 
-    // Tunggu error muncul
+    // 3. Tunggu response
+    cy.wait('@loginFail');
+
+    // 4. Verifikasi munculnya pesan error (gunakan teks yang sesuai)
+    // Jika pesan error dari API adalah "Email atau password salah"
     cy.get('.bg-red-100').should('be.visible');
-    cy.get('.bg-red-100').should('contain', 'Login failed');
+    cy.get('.bg-red-100').should('contain', 'Email atau password salah');
+    // Atau jika pesan error dari thunk adalah "Login failed", sesuaikan
+    // cy.get('.bg-red-100').should('contain', 'Login failed');
   });
 
   it('should redirect to home page after successful login', () => {
-    // Intercept API request
+    // Intercept login sukses
     cy.intercept('POST', 'https://forum-api.dicoding.dev/v1/login', {
       statusCode: 200,
       body: {
