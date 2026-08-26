@@ -8,7 +8,9 @@ describe('threadsSlice Reducer', () => {
   };
 
   it('should return the initial state', () => {
-    expect(threadsReducer(undefined, { type: 'unknown' })).toEqual(initialState);
+    expect(threadsReducer(undefined, { type: 'unknown' })).toEqual(
+      initialState,
+    );
   });
 
   it('should handle fetchThreads.pending', () => {
@@ -45,9 +47,7 @@ describe('threadsSlice Reducer', () => {
   });
 
   it('should handle createNewThread.fulfilled', () => {
-    const existingThreads = [
-      { id: '1', title: 'Old Thread' },
-    ];
+    const existingThreads = [{ id: '1', title: 'Old Thread' }];
     const newThread = { id: '2', title: 'New Thread' };
     const stateWithThreads = { ...initialState, threads: existingThreads };
     const action = {
@@ -73,7 +73,7 @@ describe('threadsSlice Reducer', () => {
       payload: { threadId, voteType: 1, userId },
     };
     const newState = threadsReducer(stateWithThreads, action);
-    const updatedThread = newState.threads.find(t => t.id === threadId);
+    const updatedThread = newState.threads.find((t) => t.id === threadId);
     expect(updatedThread.upVotesBy).toContain(userId);
     expect(updatedThread.downVotesBy).not.toContain(userId);
   });
@@ -90,7 +90,7 @@ describe('threadsSlice Reducer', () => {
       payload: { threadId, voteType: -1, userId },
     };
     const newState = threadsReducer(stateWithThreads, action);
-    const updatedThread = newState.threads.find(t => t.id === threadId);
+    const updatedThread = newState.threads.find((t) => t.id === threadId);
     expect(updatedThread.downVotesBy).toContain(userId);
     expect(updatedThread.upVotesBy).not.toContain(userId);
   });
@@ -99,7 +99,12 @@ describe('threadsSlice Reducer', () => {
     const userId = 'user-1';
     const threadId = 'thread-1';
     const existingThreads = [
-      { id: threadId, title: 'Thread 1', upVotesBy: ['user-1'], downVotesBy: [] },
+      {
+        id: threadId,
+        title: 'Thread 1',
+        upVotesBy: ['user-1'],
+        downVotesBy: [],
+      },
     ];
     const stateWithThreads = { ...initialState, threads: existingThreads };
     const action = {
@@ -107,7 +112,7 @@ describe('threadsSlice Reducer', () => {
       payload: { threadId, voteType: 0, userId },
     };
     const newState = threadsReducer(stateWithThreads, action);
-    const updatedThread = newState.threads.find(t => t.id === threadId);
+    const updatedThread = newState.threads.find((t) => t.id === threadId);
     expect(updatedThread.upVotesBy).not.toContain(userId);
     expect(updatedThread.downVotesBy).not.toContain(userId);
   });

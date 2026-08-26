@@ -12,10 +12,12 @@ export default {
   component: ThreadItem,
   decorators: [
     (Story) => (
-      <Provider store={mockStore({
-        auth: { user: { id: 'user-1' } },
-        users: { users: [{ id: 'user-1', name: 'John Doe' }] },
-      })}>
+      <Provider
+        store={mockStore({
+          auth: { user: { id: 'user-1' } },
+          users: { users: [{ id: 'user-1', name: 'John Doe' }] },
+        })}
+      >
         <BrowserRouter>
           <Story />
         </BrowserRouter>
@@ -46,7 +48,8 @@ export const WithLongTitle = {
   args: {
     thread: {
       ...mockThread,
-      title: 'This is a very long thread title that might get truncated because it exceeds the maximum length',
+      title:
+        'This is a very long thread title that might get truncated because it exceeds the maximum length',
     },
   },
 };

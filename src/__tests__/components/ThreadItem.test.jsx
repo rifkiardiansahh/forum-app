@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import configureStore from 'redux-mock-store';
@@ -26,7 +26,11 @@ describe('ThreadItem Component', () => {
   };
 
   const mockUsers = [
-    { id: 'user-1', name: 'John Doe', avatar: 'https://example.com/avatar.jpg' },
+    {
+      id: 'user-1',
+      name: 'John Doe',
+      avatar: 'https://example.com/avatar.jpg',
+    },
   ];
 
   let store;
@@ -44,7 +48,7 @@ describe('ThreadItem Component', () => {
         <BrowserRouter>
           <ThreadItem thread={mockThread} />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Test Thread')).toBeInTheDocument();
@@ -56,7 +60,7 @@ describe('ThreadItem Component', () => {
         <BrowserRouter>
           <ThreadItem thread={mockThread} />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('oleh John Doe')).toBeInTheDocument();
@@ -68,7 +72,7 @@ describe('ThreadItem Component', () => {
         <BrowserRouter>
           <ThreadItem thread={mockThread} />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('👍 2')).toBeInTheDocument();
@@ -81,7 +85,7 @@ describe('ThreadItem Component', () => {
         <BrowserRouter>
           <ThreadItem thread={mockThread} />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     const upButton = screen.getByText('👍 2');
@@ -94,7 +98,7 @@ describe('ThreadItem Component', () => {
         <BrowserRouter>
           <ThreadItem thread={mockThread} />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('redux')).toBeInTheDocument();

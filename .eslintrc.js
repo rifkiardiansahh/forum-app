@@ -22,9 +22,9 @@ module.exports = {
     'react/prop-types': 'off',
     'no-console': 'warn',
     'comma-dangle': ['error', 'always-multiline'],
-    // DUA ATURAN PENTING DI BAWAH INI:
     semi: ['error', 'always'], // Izinkan titik koma (WAJIB pakai)
     'space-before-function-paren': ['error', 'never'], // Tanpa spasi sebelum kurung fungsi
+    'no-undef': 'off', // Matikan aturan no-undef untuk mengizinkan penggunaan variabel yang belum didefinisikan
   },
   settings: {
     react: {

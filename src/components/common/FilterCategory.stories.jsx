@@ -35,15 +35,17 @@ export const Default = {
 export const WithActiveCategory = {
   decorators: [
     (Story) => (
-      <Provider store={mockStore({
-        filter: { category: 'redux' },
-        threads: {
-          threads: [
-            { id: '1', category: 'redux' },
-            { id: '2', category: 'perkenalan' },
-          ],
-        },
-      })}>
+      <Provider
+        store={mockStore({
+          filter: { category: 'redux' },
+          threads: {
+            threads: [
+              { id: '1', category: 'redux' },
+              { id: '2', category: 'perkenalan' },
+            ],
+          },
+        })}
+      >
         <Story />
       </Provider>
     ),

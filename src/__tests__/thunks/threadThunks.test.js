@@ -19,7 +19,7 @@ describe('threadThunks', () => {
     jest.clearAllMocks();
   });
 
-  it('should fetch threads successfully', async () => {
+  it('should fetch threads successfully', async() => {
     const mockThreads = [
       { id: '1', title: 'Thread 1', body: 'Body 1', ownerId: 'user-1' },
       { id: '2', title: 'Thread 2', body: 'Body 2', ownerId: 'user-2' },
@@ -36,7 +36,7 @@ describe('threadThunks', () => {
     expect(actions[1].payload).toEqual(mockThreads);
   });
 
-  it('should handle fetch threads error', async () => {
+  it('should handle fetch threads error', async() => {
     api.getAllThreads.mockRejectedValue({
       response: { data: { message: 'Network error' } },
     });
@@ -49,7 +49,7 @@ describe('threadThunks', () => {
     expect(actions[1].payload).toBe('Network error');
   });
 
-  it('should create a new thread', async () => {
+  it('should create a new thread', async() => {
     const newThread = {
       id: '3',
       title: 'New Thread',
@@ -61,7 +61,13 @@ describe('threadThunks', () => {
       data: { data: { thread: newThread } },
     });
 
-    await store.dispatch(createNewThread({ title: 'New Thread', body: 'Content', category: 'General' }));
+    await store.dispatch(
+      createNewThread({
+        title: 'New Thread',
+        body: 'Content',
+        category: 'General',
+      }),
+    );
 
     const actions = store.getActions();
     expect(actions[0].type).toBe('threads/createNewThread/pending');

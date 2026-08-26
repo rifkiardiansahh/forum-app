@@ -1,4 +1,7 @@
-import filterReducer, { setCategory, resetFilter } from '../../store/slices/filterSlice';
+import filterReducer, {
+  setCategory,
+  resetFilter,
+} from '../../store/slices/filterSlice';
 
 describe('filterSlice Reducer', () => {
   const initialState = { category: 'all' };

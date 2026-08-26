@@ -13,12 +13,18 @@ describe('authThunks', () => {
 
   beforeEach(() => {
     store = mockStore({
-      auth: { user: null, token: null, loading: false, error: null, isAuthenticated: false },
+      auth: {
+        user: null,
+        token: null,
+        loading: false,
+        error: null,
+        isAuthenticated: false,
+      },
     });
     jest.clearAllMocks();
   });
 
-  it('should dispatch pending and fulfilled on successful login', async () => {
+  it('should dispatch pending and fulfilled on successful login', async() => {
     const mockToken = 'fake-jwt-token';
     api.loginUser.mockResolvedValue({
       data: { data: { token: mockToken } },
@@ -27,19 +33,22 @@ describe('authThunks', () => {
     const expectedActions = [
       { type: 'auth/login/pending' },
       { type: 'auth/getProfile/pending' },
-      { type: 'auth/getProfile/fulfilled', payload: { user: { id: '1', name: 'Test' } } },
+      {
+        type: 'auth/getProfile/fulfilled',
+        payload: { user: { id: '1', name: 'Test' } },
+      },
       { type: 'auth/login/fulfilled', payload: { token: mockToken } },
     ];
 
-    await store.dispatch(login({ email: 'test@test.com', password: 'password123' }));
+    await store.dispatch(
+      login({ email: 'test@test.com', password: 'password123' }),
+    );
 
     const actions = store.getActions();
-    expect(actions[0].type).toBe('auth/login/pending');
-    expect(actions[actions.length - 1].type).toBe('auth/login/fulfilled');
-    expect(actions[actions.length - 1].payload.token).toBe(mockToken);
+    expect(actions).toEqual(expectedActions);
   });
 
-  it('should dispatch rejected on failed login', async () => {
+  it('should dispatch rejected on failed login', async() => {
     api.loginUser.mockRejectedValue({
       response: { data: { message: 'Invalid credentials' } },
     });
@@ -52,7 +61,7 @@ describe('authThunks', () => {
     expect(actions[actions.length - 1].payload).toBe('Invalid credentials');
   });
 
-  it('should handle logout', async () => {
+  it('should handle logout', async() => {
     const mockStoreWithAuth = mockStore({
       auth: { user: { id: '1' }, token: 'token', isAuthenticated: true },
     });

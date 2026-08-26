@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { describe, beforeEach, it, expect } from 'vitest';
 import FilterCategory from '../../components/common/FilterCategory';
 
 const middlewares = [thunk];
@@ -28,7 +29,7 @@ describe('FilterCategory Component', () => {
     render(
       <Provider store={store}>
         <FilterCategory />
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByText('Semua')).toBeInTheDocument();
@@ -41,7 +42,7 @@ describe('FilterCategory Component', () => {
     render(
       <Provider store={store}>
         <FilterCategory />
-      </Provider>
+      </Provider>,
     );
 
     const reduxButton = screen.getByText('redux');
@@ -66,7 +67,7 @@ describe('FilterCategory Component', () => {
     render(
       <Provider store={store}>
         <FilterCategory />
-      </Provider>
+      </Provider>,
     );
 
     const reduxButton = screen.getByText('redux');
